@@ -41,8 +41,16 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
                     COL_ITEM_PRICE + " TEXT, " +
                     COL_ITEM_TYPE + " TEXT )";
 
-    public ShoppingSQLiteOpenHelper(Context context) {
+    private ShoppingSQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    private static ShoppingSQLiteOpenHelper instance;
+
+    public static ShoppingSQLiteOpenHelper getInstance(Context context){
+        if(instance == null){
+            instance = new ShoppingSQLiteOpenHelper(context.getApplicationContext());
+        }return instance;
     }
 
     @Override
@@ -108,5 +116,28 @@ public class ShoppingSQLiteOpenHelper extends SQLiteOpenHelper{
                 null); // h. limit
 
         return cursor;
+    }
+    //method to get db
+    public String getDetailsById(int id){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String[] selectionArgs = new String[]{ String.valueOf(id)};
+
+        //query allows to get specific rows with all columns
+        Cursor cursor = db.query(SHOPPING_LIST_TABLE_NAME, // a. table
+                SHOPPING_COLUMNS, // b. column names
+                "_id = ?", // c. selections
+                selectionArgs, // d. selections args
+                null, // e. group by
+                null, // f. having
+                null, // g. order by
+                null); // h. limit
+        if(cursor.moveToFirst()) {
+            String details = cursor.getString(1) + " " + cursor.getString(2) + " " + cursor.getString(3) + " " + cursor.getString(4);
+            return details;
+        } else {
+            return "Error!";
+        }
+
     }
 }

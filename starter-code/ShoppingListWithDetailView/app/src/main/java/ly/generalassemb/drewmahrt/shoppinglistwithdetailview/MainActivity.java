@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         dbSetup.getReadableDatabase();
 
         mShoppingListView = (ListView)findViewById(R.id.shopping_list_view);
-        mHelper = new ShoppingSQLiteOpenHelper(MainActivity.this);
+        mHelper = ShoppingSQLiteOpenHelper.getInstance(MainActivity.this);
 
         Cursor cursor = mHelper.getShoppingList();
 
@@ -41,6 +41,21 @@ public class MainActivity extends AppCompatActivity {
         mShoppingListView.setAdapter(mCursorAdapter);
 
         handleIntent(getIntent());
+
+        mShoppingListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, Details.class);
+                Cursor cursor = mHelper.getShoppingList();
+                //position of row
+                cursor.moveToPosition(position);
+                //position of column of 0 "id"
+                int idOfClickedItem = cursor.getInt(0);
+                //Send data of id of the clicked item.
+                intent.putExtra("ID_KEY", idOfClickedItem);
+                startActivity(intent);
+            }
+        });
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
